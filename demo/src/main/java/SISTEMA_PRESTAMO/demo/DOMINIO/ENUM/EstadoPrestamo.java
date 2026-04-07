@@ -1,0 +1,5 @@
+package SISTEMA_PRESTAMO.demo.DOMINIO.ENUM;
+
+public enum EstadoPrestamo {
+    ACTIVO,DEVUELTO,VENCIDO,CANCELADO
+}

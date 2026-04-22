@@ -1,308 +1,106 @@
-# 📚 Sistema de Préstamos - Java + Spring Boot
+# Sistema de Préstamos - Java + Spring Boot
 
-## 🚀 Descripción
+Tercera versión de un sistema de gestión de préstamos desarrollada en Java con Spring Boot, enfocada en mejorar la arquitectura del proyecto, el modelado del dominio y la persistencia mediante JPA/Hibernate.
 
-Sistema de gestión de préstamos desarrollado con **Java + Spring Boot**, enfocado en aplicar conceptos de:
+## Descripción
 
-* Programación Orientada a Objetos
-* Arquitectura en capas (Dominio, Datos, Servicio)
-* Persistencia con JPA/Hibernate
-* Reglas de negocio reales (préstamos, sanciones, validaciones)
+Este proyecto representa una evolución de un sistema de préstamos previamente desarrollado en versiones sin persistencia y luego con MySQL + JDBC.  
+En esta etapa, el sistema fue reorganizado utilizando Spring Boot, Spring Data JPA y una separación más clara entre dominio, datos y servicios.
 
----
+El objetivo principal fue aplicar conceptos de programación orientada a objetos, arquitectura en capas, relaciones entre entidades y reglas de negocio reales sobre usuarios, recursos, préstamos y sanciones.
 
-## ⚙️ Instalación y Configuración
+## Funcionalidades
 
-### 🔧 1. Creación del proyecto
+- Gestión de usuarios
+- Gestión de recursos
+- Gestión de préstamos
+- Gestión de sanciones
+- Validación de límites por tipo de usuario
+- Restricción de recursos según tipo de usuario
+- Registro de devoluciones
+- Identificación de préstamos vencidos
+- Consulta de historial por recurso
+- Persistencia con Spring Data JPA
 
-Se utilizó **Spring Initializr** para generar la estructura base del proyecto.
+## Tecnologías utilizadas
 
-* Tipo de proyecto: **Maven**
-* Dependencias utilizadas:
+- Java
+- Spring Boot
+- Spring Data JPA
+- MySQL
+- Lombok
+- Maven
+- Logback
 
-  * MySQL
-  * Spring Data JPA
-  * Lombok
+## Estructura del proyecto
 
----
+- `DOMINIO`: entidades y enums del sistema
+- `DATOS`: repositorios JPA
+- `SERVICIO`: lógica de negocio
+- `DemoApplication.java`: punto de entrada de la aplicación
+- `application.properties`: configuración principal
+- `logback-spring.xml`: configuración de logs
 
-### 📦 2. Lombok
+## Configuración principal
 
-Se utiliza Lombok para reducir código repetitivo:
+En `application.properties` se utilizan configuraciones como:
 
-* `@Getter`
-* `@Setter`
-* `@ToString`
-* Constructores automáticos
+- `spring.jpa.hibernate.ddl-auto=none`
+- `spring.jpa.show-sql=true`
+- `spring.main.web-application-type=none`
 
----
+### Significado
 
-### 🛢️ 3. Configuración de Base de Datos
+- `ddl-auto=none`: evita que Hibernate modifique automáticamente la base de datos
+- `show-sql=true`: muestra las consultas generadas
+- `web-application-type=none`: ejecuta la aplicación en modo consola, sin levantar servidor web
 
-Configuraciones principales en `application.properties`:
+## Conceptos aplicados
 
-```properties
-spring.jpa.hibernate.ddl-auto=none
-spring.jpa.show-sql=true
-spring.main.web-application-type=none
-```
+- Programación orientada a objetos
+- Arquitectura en capas
+- Inyección de dependencias
+- Persistencia con JPA/Hibernate
+- Relaciones entre entidades (`@ManyToOne`, `@JoinColumn`)
+- Repositorios con `JpaRepository`
+- Servicios con `@Service`
+- Validaciones con `@NotNull`, `@NotBlank`, `@Email`
+- Transacciones de modificación con `@Transactional`
+- Consultas derivadas de Spring Data JPA
 
-#### Explicación:
+## Aprendizajes clave
 
-* `ddl-auto=none` → No modifica la base de datos automáticamente
-* `show-sql=true` → Muestra las queries generadas por Hibernate
-* `web-application-type=none` → No levanta servidor web (modo consola)
+Durante el desarrollo de esta versión se trabajó especialmente en:
 
----
+- entender la diferencia entre trabajar con objetos en JPA y trabajar con claves manuales en JDBC
+- mapear entidades y relaciones hacia tablas de MySQL
+- reemplazar acceso manual con JDBC por repositorios basados en JPA
+- desacoplar mejor la lógica de negocio del acceso a datos
+- comprender el rol de `@Service`, `@Autowired`, `@Modifying` y `@Transactional`
+- optimizar consultas evitando filtros innecesarios en memoria
 
-### 🧹 4. Logs
+## Cambios respecto a versiones anteriores
 
-Se utiliza configuración de **Logback** para limpiar la consola y evitar ruido innecesario.
+Esta versión forma parte de una evolución en tres etapas:
 
----
+1. **Sin MySQL**: modelado del dominio y lógica de negocio en memoria
+2. **Con MySQL + JDBC**: persistencia relacional manual mediante DAOs
+3. **Con Spring Boot + JPA**: reorganización del sistema con repositorios, entidades relacionadas y servicios
 
-## 🧠 Conceptos Clave Aprendidos
+## Posibles mejoras
 
-### 🔹 JPA vs MySQL
+- Mejorar el manejo de excepciones con una jerarquía más específica
+- Reemplazar inyección por campo por inyección por constructor
+- Optimizar algunas consultas de negocio
+- Incorporar controladores REST
+- Exponer el sistema como API web
+- Refactorizar algunos servicios para un desacople mayor
 
-* En JPA se trabaja con **objetos**, no con claves directamente
-* Se utilizan relaciones como:
+## Estado del proyecto
 
-```java
-@ManyToOne
-@JoinColumn(name="U_Legajo")
-```
+Proyecto funcional de práctica, conservado como tercera versión evolutiva del sistema.
 
-* Las relaciones se manejan entre objetos (POO), no entre IDs manuales
-
----
-
-### 🔹 Entidades
-
-* Se utiliza `@Entity` para mapear clases a tablas
-* Se definen columnas con `@Column`
-* Enums se manejan como String:
-
-```java
-@Enumerated(EnumType.STRING)
-```
-
-* Claves autogeneradas:
-
-```java
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-```
-
----
-
-### 🔹 Validaciones
-
-Se usan anotaciones como:
-
-* `@NotNull`
-* `@NotBlank`
-* `@Email`
-
-⚠️ Importante:
-
-* `@NotBlank` → solo para String
-* Para validar objetos se usa `@NotNull` + `@Valid`
-
----
-
-### 🔹 Capa de Datos (Repository)
-
-* Se utilizan interfaces que extienden:
-
-```java
-JpaRepository<Entidad, ID>
-```
-
-* Spring implementa automáticamente los métodos
-
-Ejemplo:
-
-```java
-List<Recurso> findByNombreContaining(String descripcion);
-```
-
----
-
-### 🔹 Capa de Servicio
-
-* Se usa `@Service`
-* Se inyectan dependencias con `@Autowired`
-
-```java
-@Autowired
-private IRecursoDatos recursoDatos;
-```
-
-📌 Concepto clave:
-
-* `@Service` crea el objeto
-* `@Autowired` lo inyecta
-
----
-
-### 🔹 Transacciones
-
-Para queries de modificación:
-
-```java
-@Modifying
-@Transactional
-```
-
-📌 Necesario para:
-
-* UPDATE
-* DELETE
-
----
-
-## ⚠️ Problemas y Correcciones Importantes
-
-### 1. ❗ Unique en JPA
-
-JPA no interpreta restricciones `UNIQUE` automáticamente → se deben validar manualmente o manejar excepciones.
-
----
-
-### 2. ❗ Save en JPA
-
-```java
-save()
-```
-
-* Si el ID existe → UPDATE
-* Si no existe → INSERT
-
----
-
-### 3. ❗ Concurrencia (Try-Catch)
-
-Dos usuarios pueden pasar validaciones al mismo tiempo →
-la base de datos debe validar definitivamente.
-
----
-
-### 4. ❗ Inyección de dependencias
-
-Siempre usar:
-
-```java
-@Autowired
-```
-
----
-
-### 5. ❗ Transacciones
-
-Operaciones de modificación requieren `@Transactional`
-
----
-
-### 6. ❗ Naming (Snake Case)
-
-Spring convierte:
-
-```text
-Java → camelCase
-MySQL → snake_case
-```
-
----
-
-### 7. ❗ Validaciones incorrectas
-
-```java
-@NotBlank Recurso recurso ❌
-```
-
-✔️ Correcto:
-
-```java
-@NotNull Recurso recurso
-```
-
----
-
-### 8. ❗ Optimización
-
-Evitar:
-
-```java
-findAll() + filtros en memoria ❌
-```
-
-Usar:
-
-```java
-findBy...() ✔️
-```
-
----
-
-## 🏗️ Arquitectura
-
-El sistema está organizado en capas:
-
-```
-DOMINIO → Entidades y reglas
-DATOS → Repositorios JPA
-SERVICIO → Lógica de negocio
-```
-
----
-
-## 🔁 Flujo del Sistema
-
-Ejemplo: Registrar préstamo
-
-1. Validar usuario
-2. Validar recurso
-3. Validar restricciones
-4. Crear préstamo
-5. Guardar en BD
-6. Cambiar estado del recurso
-
----
-
-## 📌 Estado del Proyecto
-
-✔️ Funcional
-✔️ Con reglas de negocio
-✔️ Arquitectura en capas
-
-🚧 Pendiente (mejoras futuras):
-
-* Manejo de excepciones más específico
-* Optimización de queries
-* Mejor desacoplamiento entre servicios
-* Implementación web (API REST)
-
----
-
-## 🧠 Conclusión
-
-Este proyecto representa una base sólida para entender:
-
-* Cómo funciona Spring Boot internamente
-* Cómo se conecta Java con bases de datos
-* Cómo diseñar lógica de negocio real
-
----
-
-## 🔄 Próximos pasos
-
-* Continuar con el curso de Java
-* Volver a este proyecto para una versión 2
-* Refactorizar a nivel profesional
-
----
-
-## 👨‍💻 Autor
+## Autor
 
 Proyecto desarrollado como práctica de aprendizaje en Ingeniería en Sistemas.
 
